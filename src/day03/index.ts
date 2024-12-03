@@ -45,6 +45,27 @@ const part1 = (rawInput: string) => {
 }
 
 const part2 = (rawInput: string) => {
+  // const input = rawInput
+  // const matches = input.matchAll(/(mul|don't|do)\(((\d+),(\d+)|)\)/g)
+  // let mulEnabled = true
+  // return Array.from(matches).reduce((acc, m) => {
+  //   const [,instruction, , a, b] = m
+  //   switch(instruction) {
+  //     case 'do': {
+  //       mulEnabled = true
+  //       return acc
+  //     }
+  //     case 'don\'t': {
+  //       mulEnabled = false
+  //       return acc
+  //     }
+  //     case 'mul': {
+  //       if (mulEnabled) return acc + parseInt(a) * parseInt(b)
+  //       return acc
+  //     }
+  //   }
+  // }, 0)
+
   const program = parseInput(rawInput)
   let state: State = {
     total: 0,
