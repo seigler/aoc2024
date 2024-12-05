@@ -11,33 +11,22 @@ const parseInput = (rawInput: string) => {
 const part1 = (rawInput: string) => {
   const {rules, updates} = parseInput(rawInput)
   return updates.reduce((total, update) => {
-    let seen: number[] = []
-    for (const page of update) {
-      if (rules.some(rule => seen.includes(rule[1]) && rule[0] === page)) {
-        return total
-      }  
-      seen.push(page)
-    }
-    return total + seen[Math.floor(seen.length / 2)]
+    const sortedUpdate = [...update].sort((p1,p2) => {
+      return rules.some(rule => rule[0] === p1 && rule[1] === p2) ? -1 : 1
+    })
+    if (update.join() !== sortedUpdate.join()) return total
+    return total + update[Math.floor(update.length / 2)]
   }, 0)
 }
 
 const part2 = (rawInput: string) => {
   const {rules, updates} = parseInput(rawInput)
   return updates.reduce((total, update) => {
-    let seen: number[] = []
-    for (const page of update) {
-      if (rules.some(rule => seen.includes(rule[1]) && rule[0] === page)) {
-        // needs fixing
-        const sortedUpdate = update.sort((p1,p2) => {
-          return rules.some(rule => rule[0] === p1 && rule[1] === p2) ? -1 : 1
-        })
-        return total + update[Math.floor(update.length / 2)]
-      }  
-      seen.push(page)
-    }
-    // it's fine
-    return total
+    const sortedUpdate = [...update].sort((p1,p2) => {
+      return rules.some(rule => rule[0] === p1 && rule[1] === p2) ? -1 : 1
+    })
+    if (update.join() === sortedUpdate.join()) return total
+    return total + sortedUpdate[Math.floor(update.length / 2)]
   }, 0)
 }
 
@@ -115,5 +104,5 @@ run({
     solution: part2,
   },
   trimTestInputs: true,
-  onlyTests: false,
+  onlyTests: true,
 })
