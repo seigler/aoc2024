@@ -83,12 +83,12 @@
         "time": null
       },
       "part2": {
-        "solved": false,
-        "result": "1878",
+        "solved": true,
+        "result": "1753",
         "attempts": [
           "1878"
         ],
-        "time": 2128.985844
+        "time": 37138.280767
       }
     },
     {

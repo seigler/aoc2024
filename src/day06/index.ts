@@ -75,7 +75,19 @@ const part2 = (rawInput: string) => {
       position = nextPosition
     }
   }
-  return walk([Math.floor(rawCol / (width + 1)), rawCol % (width + 1)])
+  // nevermind recursion I guess we will brute force
+  const start = [Math.floor(rawCol / (width + 1)), rawCol % (width + 1)]
+  console.log("Working...")
+  for (let r = 0; r < input.length; r++) {
+    for (let c = 0; c < width; c++) {
+      if (input[r][c] !== '#') {
+        walk(start, [r,c])
+      }
+    }
+    process.stdout.write(`\r${Math.floor(r / input.length * 100)}%`)
+  }
+  console.log('\nDone!')
+  return obstructions.size
 }
 
 run({
