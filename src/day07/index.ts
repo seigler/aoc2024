@@ -3,18 +3,13 @@ import run from "aocrunner"
 const parseInput = (rawInput: string) =>
   rawInput.split("\n").map((line) => line.split(/[: ]+/).map(Number))
 
-const part1 = (rawInput: string) => {
-  const input = parseInput(rawInput)
-
+const solve = (rawInput: string, isP2?: boolean) => {
+  const input = rawInput.split('\n').map(l => l.split(/[^\d]+/).map(Number))
   return input.reduce((total, [target, ...values]) => {
-    const operators = [(a,b) => a * b, (a,b) => a + b]
+    const operators = [(a,b) => a * b, (a,b) => a + b, ...(isP2 ? [(a,b) => Number(`${a}${b}`)] : [])]
     const evaluate = (numbers: number[]) => {
-      if (numbers[0] > target) {
-        return false
-      }
-      if (numbers.length === 1) {
-        return numbers[0] === target
-      }
+      if (numbers[0] > target) return false
+      if (numbers.length === 1) return numbers[0] === target
       for (const op of operators) {
         if (evaluate([op(numbers[0], numbers[1]), ...numbers.slice(2)])) { return true }
       }
@@ -23,24 +18,12 @@ const part1 = (rawInput: string) => {
   }, 0)
 }
 
-const part2 = (rawInput: string) => {
-  const input = parseInput(rawInput)
+const part1 = (rawInput: string) => {
+  return solve(rawInput, false)
+}
 
-  return input.reduce((total, [target, ...values]) => {
-    const operators = [(a,b) => a * b, (a,b) => a + b, (a,b) => Number(`${a}${b}`)]
-    const evaluate = (numbers: number[]) => {
-      if (numbers[0] > target) {
-        return false
-      }
-      if (numbers.length === 1) {
-        return numbers[0] === target
-      }
-      for (const op of operators) {
-        if (evaluate([op(numbers[0], numbers[1]), ...numbers.slice(2)])) { return true }
-      }
-    }
-    return total + (evaluate(values) ? target : 0)
-  }, 0)
+const part2 = (rawInput: string) => {
+  return solve(rawInput, true)
 }
 
 run({
