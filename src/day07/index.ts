@@ -1,8 +1,5 @@
 import run from "aocrunner"
 
-const parseInput = (rawInput: string) =>
-  rawInput.split("\n").map((line) => line.split(/[: ]+/).map(Number))
-
 const solve = (rawInput: string, isP2?: boolean) => {
   const input = rawInput.split('\n').map(l => l.split(/[^\d]+/).map(Number))
   return input.reduce((total, [target, ...values]) => {
