@@ -9,12 +9,14 @@ const orthogonals = [
   [1, 0], // down
   [0, -1], // left
 ]
+
 const diagonals = [
   [-1, 1], // up right
   [1, 1], // down right
   [1, -1], // down left
   [-1, -1], // up left
 ]
+
 const getNeighbors = (r: number, c: number) => {
   return orthogonals.map(([dr, dc]) => [r + dr, c + dc])
 }
@@ -22,6 +24,11 @@ const getNeighbors = (r: number, c: number) => {
 const getKey = (items: unknown[]) => {
   return items.join(",")
 }
+
+const unpackKey = <T>(key: Key, mapper: (input: string) => T) => {
+  return key.split(",").map(mapper)
+}
+
 type Key = ReturnType<typeof getKey>
 
 type Region = {
@@ -31,11 +38,10 @@ type Region = {
   plots: Key[]
 }
 
-const part1 = (rawInput: string) => {
-  const input = parseInput(rawInput)
+const getRegions = (map: string[][]) => {
   let regions = new Set<Region>()
 
-  input.forEach((row, r) => {
+  map.forEach((row, r) => {
     row.forEach((symbol, c) => {
       const key = getKey([r, c])
       const neighbors = getNeighbors(r, c).map(getKey)
@@ -69,7 +75,12 @@ const part1 = (rawInput: string) => {
       regions.add(newRegion)
     })
   })
-  return Array.from(regions).reduce(
+  return regions
+}
+
+const part1 = (rawInput: string) => {
+  const input = parseInput(rawInput)
+  return Array.from(getRegions(input)).reduce(
     (total, region) => total + region.perimeter * region.area,
     0,
   )
@@ -77,47 +88,12 @@ const part1 = (rawInput: string) => {
 
 const part2 = (rawInput: string) => {
   const input = parseInput(rawInput)
-  let regions = new Set<Region>()
+  const regions = getRegions(input)
 
-  input.forEach((row, r) => {
-    row.forEach((symbol, c) => {
-      const key = getKey([r, c])
-      const neighbors = getNeighbors(r, c).map(getKey)
-      let touches = 0
-      let matchingRegions: Region[] = []
-      regions.forEach((region) => {
-        if (region.symbol !== symbol) return
-        const newTouches = region.plots.filter((c) =>
-          neighbors.includes(c),
-        ).length
-        if (newTouches > 0) {
-          touches += newTouches
-          matchingRegions.push(region)
-          regions.delete(region)
-        }
-      })
-      const newRegion = matchingRegions.reduce<Region>(
-        (acc, cur) => {
-          acc.area += cur.area
-          acc.perimeter += cur.perimeter
-          acc.plots.push(...cur.plots)
-          return acc
-        },
-        {
-          symbol,
-          area: 1,
-          perimeter: 4 - 2 * touches,
-          plots: [key],
-        },
-      )
-      regions.add(newRegion)
-    })
-  })
-
-  return Array.from(regions).reduce((total, { symbol, plots, area }) => {
+  return Array.from(regions).reduce((total, { plots, area }) => {
     let corners = 0
     plots.forEach((plot) => {
-      const [r, c] = plot.split(",").map(Number)
+      const [r, c] = unpackKey(plot, Number)
       const orthogonalProbes = getNeighbors(r, c)
         .map(getKey)
         .map((k) => plots.includes(k))
@@ -144,38 +120,39 @@ const part2 = (rawInput: string) => {
 }
 
 run({
-  //   part1: {
-  //     tests: [
-  //       {
-  //         input: `AAAA
-  // BBCD
-  // BBCC
-  // EEEC`,
-  //         expected: 140,
-  //       },
-  //       {
-  //         input: `OOOOO
-  // OXOXO
-  // OOOOO
-  // OXOXO
-  // OOOOO`, expected: 772
-  //       },
-  //       {
-  //         input: `RRRRIICCFF
-  // RRRRIICCCF
-  // VVRRRCCFFF
-  // VVRCCCJFFF
-  // VVVVCJJCFE
-  // VVIVCCJJEE
-  // VVIIICJJEE
-  // MIIIIIJJEE
-  // MIIISIJEEE
-  // MMMISSJEEE`,
-  //         expected: 1930
-  //       }
-  //     ],
-  //     solution: part1,
-  //   },
+  part1: {
+    tests: [
+      {
+        input: `AAAA
+  BBCD
+  BBCC
+  EEEC`,
+        expected: 140,
+      },
+      {
+        input: `OOOOO
+  OXOXO
+  OOOOO
+  OXOXO
+  OOOOO`,
+        expected: 772,
+      },
+      {
+        input: `RRRRIICCFF
+  RRRRIICCCF
+  VVRRRCCFFF
+  VVRCCCJFFF
+  VVVVCJJCFE
+  VVIVCCJJEE
+  VVIIICJJEE
+  MIIIIIJJEE
+  MIIISIJEEE
+  MMMISSJEEE`,
+        expected: 1930,
+      },
+    ],
+    solution: part1,
+  },
   part2: {
     tests: [
       {
