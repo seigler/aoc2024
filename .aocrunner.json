@@ -175,9 +175,11 @@
     },
     {
       "part1": {
-        "solved": false,
+        "solved": true,
         "result": null,
-        "attempts": [],
+        "attempts": [
+          "813344"
+        ],
         "time": null
       },
       "part2": {
