@@ -104,13 +104,24 @@ const part2 = (rawInput: string) => {
         const nextDirection = (thisDirection + 1) % 4
         const presentNextDirection = orthogonalProbes[nextDirection]
         if (
-          presentThisDirection &&
-          presentNextDirection &&
-          !diagonalProbes[thisDirection]
+          // example: plot is X, direction is right
+          // ###
+          // #XA
+          // #B.
+          presentThisDirection && // A
+          presentNextDirection && // B
+          !diagonalProbes[thisDirection] // .
         ) {
           corners += 1
         }
-        if (!presentThisDirection && !presentNextDirection) {
+        if (
+          // example: plot is X, direction is right
+          // ##.
+          // #X!
+          // .!.
+          !presentThisDirection && // !
+          !presentNextDirection // !
+        ) {
           corners += 1
         }
       })
