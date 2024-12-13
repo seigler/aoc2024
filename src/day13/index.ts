@@ -1,64 +1,30 @@
 import run from "aocrunner"
-const parseInput = (rawInput: string) =>
-  rawInput.split("\n\n").map((machine) => {
+
+const solve = (rawInput: string, extra = 0) => {
+  const machines = rawInput.split("\n\n").map((machine) => {
     return machine
       .split("\n")
       .map((l) => Array.from(l.matchAll(/\d+/g)).map(Number))
   })
+  return machines.reduce((total, machine) => {
+    const [[adx, ady], [bdx, bdy], [specx, specy]] = machine
+    const prizex = extra + specx
+    const prizey = extra + specy
+    const bPresses = (prizex * ady - prizey * adx) / (bdx * ady - bdy * adx)
+    const aPresses = (prizey - bPresses * bdy) / ady
+    if (bPresses % 1 === 0 && aPresses % 1 === 0) {
+      return total + 3 * aPresses + bPresses
+    }
+    return total
+  }, 0)
+}
 
 const part1 = (rawInput: string) => {
-  const input = parseInput(rawInput)
-  let spent = 0
-  for (const machine of input) {
-    const [[adx, ady], [bdx, bdy], [prizex, prizey]] = machine
-    let minCost = Number.POSITIVE_INFINITY
-    const tried = new Set<string>()
-    const simulate = (
-      x: number,
-      y: number,
-      aPresses: number,
-      bPresses: number,
-    ) => {
-      const key = [x, y, aPresses, bPresses].join()
-      if (tried.has(key)) return
-      tried.add(key)
-      if (x > prizex || y > prizey) {
-        return
-      }
-      const cost = aPresses * 3 + bPresses
-      if (cost >= minCost) {
-        return
-      }
-      if (x === prizex && y === prizey) {
-        minCost = cost
-        return
-      }
-      simulate(x + adx, y + ady, aPresses + 1, bPresses)
-      simulate(x + bdx, y + bdy, aPresses, bPresses + 1)
-    }
-    simulate(0, 0, 0, 0)
-    if (minCost < Number.POSITIVE_INFINITY) {
-      spent += minCost
-    }
-  }
-  return spent
+  return solve(rawInput)
 }
 
 const part2 = (rawInput: string) => {
-  const input = parseInput(rawInput)
-  let spent = 0
-  for (const machine of input) {
-    const [[adx, ady], [bdx, bdy], [specx, specy]] = machine
-    const prizex = 10000000000000 + specx
-    const prizey = 10000000000000 + specy
-    const bPresses = (prizex * ady - prizey * adx) / (bdx * ady - bdy * adx)
-    const aPresses = (prizey - bPresses * bdy) / ady
-    console.log({ aPresses, bPresses })
-    if (bPresses % 1 === 0 && aPresses % 1 === 0) {
-      spent += 3 * aPresses + bPresses
-    }
-  }
-  return spent
+  return solve(rawInput, 10000000000000)
 }
 
 run({
