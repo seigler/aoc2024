@@ -24,26 +24,24 @@ const part1 = (rawInput: string) => {
 }
 
 const part2 = (rawInput: string) => {
-  (async () => {
-    const input = parseInput(rawInput)
-    const width = 101
-    const height = 103
-    for (let i = 0; i < 20000; i++) {
-      const canvas: string[][] = []
-      for (let y = 0; y < height; y++) {
-        canvas.push(" ".repeat(width).split(''))
-      }
-      input.forEach(([ix, iy, dx, dy]) => {
-        const destx = (ix + (width + dx) * i) % width
-        const desty = (iy + (height + dy) * i) % height
-        canvas[desty][destx] = "#"
-      })
-      if (canvas.some(line => line.join('').includes("##########"))) {
-        await new Promise(resolve => setTimeout(resolve, 1000))
-        console.log(`\nTIME: ${i} seconds\n${canvas.map(line => console.log(line.join(""))).join('\n')}`)
-      }
+  const input = parseInput(rawInput)
+  const width = 101
+  const height = 103
+  for (let i = 0; i < width * height; i++) {
+    const canvas: string[][] = []
+    for (let y = 0; y < height; y++) {
+      canvas.push(" ".repeat(width).split(''))
     }
-  })()
+    input.forEach(([ix, iy, dx, dy]) => {
+      const destx = (ix + (width + dx) * i) % width
+      const desty = (iy + (height + dy) * i) % height
+      canvas[desty][destx] = "#"
+    })
+    if (canvas.some(line => line.join('').includes("##########"))) {
+      console.log(`\nTIME: ${i} seconds\n${canvas.map(line => console.log(line.join(""))).join('\n')}`)
+      return i
+    }
+  }
 }
 
 run({
