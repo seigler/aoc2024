@@ -1,4 +1,5 @@
 import run from "aocrunner"
+import * as readline from "readline"
 
 type Coord = [number, number]
 
@@ -39,7 +40,7 @@ const part1 = (rawInput: string) => {
 
   // Solving
   let [rPos, cPos] = start
-  movements.forEach((move) => {
+  movements.forEach((move, moveNum) => {
     const [dr, dc] = deltas[move]
     for (let i = 1; ; i++) {
       const key = getKey(rPos + dr * i, cPos + dc * i)
@@ -57,20 +58,25 @@ const part1 = (rawInput: string) => {
     cPos += dc
 
     // Uncomment to show moves
-
+    
+    // if (moveNum > 0) {
+    //   readline.moveCursor(process.stdout, 0, - map.length - 1)
+    // }
     // console.log(move)
+    // const canvas: string[] = []
     // map.forEach((row,r) => {
     //   const line = row.map((_, c) => {
     //     const key = getKey(r,c)
-    //     if (boxes.has(key)) return "O"
-    //     if (walls.has(key)) return "#"
-    //     if (rPos === r && cPos === c) return "@"
+    //     if (boxes.has(key)) return "\x1b[33;1mO\x1b[0m"
+    //     if (walls.has(key)) return "\x1b[30;100m \x1b[0m"
+    //     if (rPos === r && cPos === c) return "\x1b[96m@\x1b[0m"
     //     return " "
     //   }).join('')
-    //   console.log(line)
+    //   canvas.push(line)
     // })
-    // console.log('')
+    // console.log(canvas.join('\n'))
   })
+
   return Array.from(boxes.values()).reduce((total, b) => total + b, 0)
 }
 
@@ -101,8 +107,8 @@ const part2 = (rawInput: string) => {
   // Solving
   let [rPos, cPos] = start
  
-  movements.forEach((instruction) => {
-    const [dr, dc] = deltas[instruction]
+  movements.forEach((move, moveNum) => {
+    const [dr, dc] = deltas[move]
     if (dr === 0) { // horizontal movement
       for (let i = 1; ; i++) {
         const key = getKey(rPos, cPos + dc * i)
@@ -132,11 +138,11 @@ const part2 = (rawInput: string) => {
     const toDelete: Key[] = []
     const toAdd: Key[] = []
     // solve this with recursion!
-    const move = (r: number, c: number, dr: number): boolean => {
+    const push = (r: number, c: number, dr: number): boolean => {
       const keyAhead = getKey(r + dr, c)
       if (walls.has(keyAhead)) return false
       if (boxes.has(keyAhead)) {
-        if (move(r + dr, c, dr) && move(r + dr, c + 1, dr)) {
+        if (push(r + dr, c, dr) && push(r + dr, c + 1, dr)) {
           toDelete.push(keyAhead)
           toAdd.push(getKey(r+2*dr, c))
           return true
@@ -145,7 +151,7 @@ const part2 = (rawInput: string) => {
       }
       const keyLeftAhead = getKey(r + dr, c-1)
       if (boxes.has(keyLeftAhead)) {
-        if (move(r + dr, c - 1, dr) && move(r + dr, c, dr)) {
+        if (push(r + dr, c - 1, dr) && push(r + dr, c, dr)) {
           toDelete.push(keyLeftAhead)
           toAdd.push(getKey(r + 2*dr, c - 1))
           return true
@@ -154,7 +160,7 @@ const part2 = (rawInput: string) => {
       }
       return true
     }
-    if (move(rPos, cPos, dr)) {
+    if (push(rPos, cPos, dr)) {
       toDelete.forEach(k => boxes.delete(k))
       toAdd.forEach(k => boxes.add(k))
     } else {
@@ -166,19 +172,23 @@ const part2 = (rawInput: string) => {
 
     // Uncomment to show moves
 
-    // console.log(instruction)
+    // if (moveNum > 0) {
+    //   readline.moveCursor(process.stdout, 0, - map.length - 1)
+    // }
+    // console.log(move)
+    // const canvas: string[] = []
     // map.forEach((row,r) => {
     //   const line = new Array(row.length * 2).fill(0).map((_, c) => {
     //     const key = getKey(r,c)
-    //     if (rPos === r && cPos === c) return "@"
-    //     if (boxes.has(key)) return "["
-    //     if (boxes.has(getKey(r, c-1))) return "]"
-    //     if (walls.has(key)) return "#"
-    //     return "."
+    //     if (rPos === r && cPos === c) return "\x1b[96m@\x1b[0m"
+    //     if (boxes.has(key)) return "\x1b[33;1m[\x1b[0m"
+    //     if (boxes.has(getKey(r, c-1))) return "\x1b[33;1m]\x1b[0m"
+    //     if (walls.has(key)) return "\x1b[30;100m \x1b[0m"
+    //     return " "
     //   }).join('')
-    //   console.log(line)
+    //   canvas.push(line)
     // })
-    // console.log('')
+    // console.log(canvas.join('\n'))
   })
   return Array.from(boxes.values()).reduce((total, b) => total + b, 0)
 }
