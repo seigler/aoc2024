@@ -254,17 +254,17 @@
     {
       "part1": {
         "solved": true,
-        "result": null,
+        "result": "1,5,0,1,7,4,1,0,3",
         "attempts": [
           "1,4,0,1,1,0,1,0,3"
         ],
-        "time": null
+        "time": 0.057416
       },
       "part2": {
-        "solved": false,
-        "result": null,
+        "solved": true,
+        "result": "47910079998866",
         "attempts": [],
-        "time": null
+        "time": 8772.936208
       }
     },
     {
