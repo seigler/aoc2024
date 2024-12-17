@@ -15,12 +15,15 @@
   "author": "Joshua Seigler",
   "license": "ISC",
   "devDependencies": {
+    "@types/heap": "^0.2.34",
     "@types/node": "^16.11.6",
     "aocrunner": "^1.10.0",
-    "prettier": "^2.8.0"
+    "prettier": "^2.8.8"
   },
-  "dependencies": {},
   "engines": {
     "node": ">=16.13.0"
+  },
+  "dependencies": {
+    "heap": "^0.2.7"
   }
 }
