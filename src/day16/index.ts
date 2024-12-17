@@ -3,8 +3,6 @@ import Heap from 'heap'
 
 const parseInput = (rawInput: string) => rawInput.split('\n').map(line => line.split(''))
 
-type Tuple<TItem, TLength extends number> = [TItem, ...TItem[]] & { length: TLength }
-
 const deltas: [Coord, Coord, Coord, Coord] = [
   [ 0,  1], // right
   [ 1,  0], // down
@@ -15,7 +13,7 @@ const deltas: [Coord, Coord, Coord, Coord] = [
 type Coord = [number, number]
 
 const bold = (text: string) => {
-  return `\x1b[44;37m${text}\x1b[0m`
+  return `\x1b[44;37;1m${text}\x1b[0m`
 }
 
 type Step = {
@@ -40,16 +38,17 @@ const part1 = (rawInput: string) => {
     cost: 0,
     prev: null
   })
+  const pqDict: Record<string, Step> = {}
   while (pq.size() > 0) {
     const prev = pq.pop()
     const { r, c, dir, cost } = prev
     const here = get(r, c)
     if (here === 'E') {
       // draw it
-      let cur = prev.prev
+      let cur = prev
       const visited = new Map<string, number>()
-      while (cur.prev !== null) {
-        visited.set(`${cur.r},${cur.c}`, cur.dir)
+      while (cur.prev.prev !== null) {
+        visited.set(`${cur.prev.r},${cur.prev.c}`, cur.dir)
         cur = cur.prev
       }
       console.log(
@@ -67,19 +66,25 @@ const part1 = (rawInput: string) => {
           })
           .join("\n"),
       )
+      // done drawing
       return cost
     }
     for (let i = 0; i < (here === "S" ? 4 : 3); i += 1) {
       const newDir = (dir + 3 + i) % 4 // left, ahead, right, u-turn
       const [dr, dc] = deltas[newDir]
       const addedCost = [1001, 1, 1001, 2001][i]
-      if (get(r + dr, c + dc) !== "#") pq.push({
+      if (get(r + dr, c + dc) === "#") continue
+      const newKey = `${r+dr},${c+dc},${newDir}`
+      if (pqDict[newKey] !== undefined && pqDict[newKey].cost < cost) continue
+      const newStep: Step = {
         r: r + dr,
         c: c + dc,
         dir: newDir,
         cost: cost + addedCost,
         prev,
-      })
+      }
+      pqDict[newKey] = newStep
+      pq.push(newStep)
     }
   }
 }
@@ -91,7 +96,50 @@ const part2 = (rawInput: string) => {
 }
 
 run({
-  part1: {
+//   part1: {
+//     tests: [
+//       {
+//         input: `###############
+// #.......#....E#
+// #.#.###.#.###.#
+// #.....#.#...#.#
+// #.###.#####.#.#
+// #.#.#.......#.#
+// #.#.#####.###.#
+// #...........#.#
+// ###.#.#####.#.#
+// #...#.....#.#.#
+// #.#.#.###.#.#.#
+// #.....#...#.#.#
+// #.###.#.#.#.#.#
+// #S..#.....#...#
+// ###############`,
+//         expected: 7036,
+//       },
+//       {
+//         input: `#################
+// #...#...#...#..E#
+// #.#.#.#.#.#.#.#.#
+// #.#.#.#...#...#.#
+// #.#.#.#.###.#.#.#
+// #...#.#.#.....#.#
+// #.#.#.#.#.#####.#
+// #.#...#.#.#.....#
+// #.#.#####.#.###.#
+// #.#.#.......#...#
+// #.#.###.#####.###
+// #.#.#...#.....#.#
+// #.#.#.#####.###.#
+// #.#.#.........#.#
+// #.#.#.#########.#
+// #S#.............#
+// #################`,
+//         expected: 11048
+//       }
+//     ],
+//     solution: part1,
+//   },
+  part2: {
     tests: [
       {
         input: `###############
@@ -109,17 +157,28 @@ run({
 #.###.#.#.#.#.#
 #S..#.....#...#
 ###############`,
-        expected: 7036,
+        expected: 45,
       },
-    ],
-    solution: part1,
-  },
-  part2: {
-    tests: [
-      // {
-      //   input: ``,
-      //   expected: "",
-      // },
+      {
+        input: `#################
+#...#...#...#..E#
+#.#.#.#.#.#.#.#.#
+#.#.#.#...#...#.#
+#.#.#.#.###.#.#.#
+#...#.#.#.....#.#
+#.#.#.#.#.#####.#
+#.#...#.#.#.....#
+#.#.#####.#.###.#
+#.#.#.......#...#
+#.#.###.#####.###
+#.#.#...#.....#.#
+#.#.#.#####.###.#
+#.#.#.........#.#
+#.#.#.#########.#
+#S#.............#
+#################`,
+        expected: 64
+      }
     ],
     solution: part2,
   },
